@@ -1,0 +1,12 @@
+show ip bgp
+show ip bgp neighbor
+show interface eth 0
+show interface
+show vlan
+show alarms
+show port_channel interface
+show port_channel interface agg1
+show ?
+show version
+show_cli
+show lldp neighbors

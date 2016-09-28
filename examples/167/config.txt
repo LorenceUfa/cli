@@ -1,0 +1,109 @@
+ena
+config
+vlan 10
+exit
+interface eth 0
+speed 100
+negotiate OFF
+no shutdown
+ip address 172.16.0.21/31
+exit
+interface vlan 10
+ip address 10.10.0.193/26
+vrrp 1000
+ip virt_address 20.20.0.193/26
+exit
+exit
+
+
+route_policy_condition HostNetwork
+condition_type MatchDstIpPrefix
+ip_prefix 10.10.0.193/26
+mask_length_range exact
+exit
+
+route_policy_statement RedistHostNetwork
+match_conditions all
+conditions HostNetwork
+action permit
+exit
+
+route_policy RedistConnect_Policy
+match_type all
+policy_type ALL
+priority_stmt 1
+match_statement RedistHostNetwork
+exit
+exit
+
+bfd enable
+bfd param Session1
+multiplier 3
+interval 250
+min_rx 250
+exit 
+
+router bgp 420000001
+router_id 10.1.10.241
+use_multiple_paths
+maximum_ibgp_paths 32
+maximum_paths 32
+redistribute CONNECTED
+policy RedistConnect_Policy
+exit
+
+peer_ip_group Group1
+description CLOS Leaf
+connect_retry_time 30
+timers_hold_time 30
+keep_alive_time 60
+exit
+
+neighbor ip 172.16.0.1
+peer_as 420000002
+description Redstone-RU40(10.1.10.242)
+peer_group Group1
+bfd true
+bfd_session_param Session1
+exit
+
+neighbor ip 172.16.0.7
+peer_as 420000003
+description Nexus-RU39(10.1.10.250)
+peer_group Group1
+bfd true
+bfd_session_param Session1
+exit
+
+neighbor ip 172.16.0.3
+peer_as 420000004
+description Redstone-RU38(10.1.10.244)
+peer_group Group1
+bfd true
+bfd_session_param Session1
+exit
+
+neighbor ip 172.16.0.5
+peer_as 420000005
+description Redstone-RU36(10.1.10.243)
+peer_group Group1
+bfd true
+bfd_session_param Session1
+exit
+exit
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
